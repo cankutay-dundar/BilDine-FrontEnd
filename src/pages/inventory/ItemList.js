@@ -1,22 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { getAllItems, deleteItem } from "../../api/inventoryApi";
+import { getAllItems, deleteItem, getLowStockAlerts } from "../../api/inventoryApi";
 import { Link } from "react-router-dom";
 
 function ItemList() {
   const [items, setItems] = useState([]);
+  const [alerts, setAlerts] = useState([]);
 
-  const loadItems = () => {
-    getAllItems().then(setItems);
+  const loadData = async () => {
+    const itemsData = await getAllItems();
+    setItems(itemsData);
+
+    try {
+      const alertsData = await getLowStockAlerts();
+      setAlerts(alertsData);
+    } catch (err) {
+      console.error("Failed to load alerts", err);
+    }
   };
 
   useEffect(() => {
-    loadItems();
+    loadData();
   }, []);
 
   const handleDelete = (name) => {
     if (window.confirm("Are you sure?")) {
       deleteItem(name).then(() => {
-        loadItems(); // ✅ refresh without page reload
+        loadData(); // ✅ refresh without page reload
       });
     }
   };
@@ -39,21 +48,34 @@ function ItemList() {
         </thead>
 
         <tbody>
-          {items.map((item) => (
-            <tr key={item.name}>
-              <td>{item.name}</td>
-              <td>{item.price}</td>
-              <td>{item.amount}</td>
-              <td>-</td>
-              <td>-</td>
-              <td>
-                <Link to={`/items/edit/${item.name}`}>Edit</Link>{" "}
-                <button onClick={() => handleDelete(item.name)}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
+          {items.map((item) => {
+            const hasAlert = alerts.some(a => a.itemName === item.name);
+            return (
+              <tr
+                key={item.name}
+                style={hasAlert ? { backgroundColor: "#374151", color: "#f9fafb" } : {}}
+              >
+                <td>{item.name}</td>
+                <td>{item.price}</td>
+                <td style={hasAlert ? { color: "#f87171", fontWeight: "bold" } : {}}>
+                  {item.amount}
+                  {hasAlert && (
+                    <span style={{ marginLeft: 8, fontSize: "0.85em" }}>
+                      ⚠️ Low Stock
+                    </span>
+                  )}
+                </td>
+                <td>-</td>
+                <td>-</td>
+                <td>
+                  <Link to={`/items/edit/${item.name}`}>Edit</Link>{" "}
+                  <button onClick={() => handleDelete(item.name)}>
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -194,7 +194,12 @@ export const getItemUsageHistory = (itemName) =>
   fetch(`${BASE_URL}/usage/${itemName}`)
     .then(res => res.json());
 
-    export const getLowStockItems = async (threshold = 10) => {
+export const getLowStockItems = async (threshold = 10) => {
   const res = await fetch(`/api/inventory/items/low-stock?threshold=${threshold}`);
+  return res.json();
+};
+
+export const getLowStockAlerts = async () => {
+  const res = await fetch(`/api/inventory/items/alerts`);
   return res.json();
 };
