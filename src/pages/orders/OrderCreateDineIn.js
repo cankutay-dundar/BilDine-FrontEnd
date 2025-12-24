@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { createDineInOrder, getOrderById } from "../../api/orderApi";
-import { getAllUsers } from "../../api/peopleApi";
+import { createDineInOrder, getOrderById, getDineInOrders } from "../../api/orderApi";
+import { getAllWaiters } from "../../api/peopleApi";
 import { getAllCourses } from "../../api/inventoryApi";
 
 function OrderCreateDineIn() {
@@ -21,7 +21,7 @@ function OrderCreateDineIn() {
 
   /* ================= INIT ================= */
   useEffect(() => {
-    getAllUsers().then(setUsers);
+    getAllWaiters().then(setUsers);
     getAllCourses().then(setCoursesList);
     loadDineInOrders();
   }, []);
@@ -38,85 +38,80 @@ function OrderCreateDineIn() {
     setSelectedCourse("");
     setQuantity(1);
   };
-const calculateTotalPrice = (courses) => {
-  let total = 0;
+  const calculateTotalPrice = (courses) => {
+    let total = 0;
 
-  for (const [courseName, qty] of Object.entries(courses)) {
-    const course = coursesList.find(c => c.courseName === courseName);
-    if (course) {
-      total += course.price * qty;
+    for (const [courseName, qty] of Object.entries(courses)) {
+      const course = coursesList.find(c => c.courseName === courseName);
+      if (course) {
+        total += course.price * qty;
+      }
     }
-  }
 
-  return total;
-};
+    return total;
+  };
 
   /* ================= CREATE ORDER ================= */
-const submit = async () => {
-  if (!waiterId || !tableNo || Object.keys(courses).length === 0) {
-    alert("Please fill all fields");
-    return;
-  }
+  const submit = async () => {
+    if (!waiterId || !tableNo || Object.keys(courses).length === 0) {
+      alert("Please fill all fields");
+      return;
+    }
 
-  try {
-    const orderId = await createDineInOrder(
-      Number(waiterId),
-      Number(tableNo),
-      courses
-    );
+    try {
+      const orderId = await createDineInOrder(
+        Number(waiterId),
+        Number(tableNo),
+        courses
+      );
 
-const totalPrice = calculateTotalPrice(courses);
+      const totalPrice = calculateTotalPrice(courses);
 
-const newOrder = {
-  orderId,
-  tableNo: Number(tableNo),
-  status: "RECEIVED",
-  orderPrice: totalPrice,
-  date: new Date().toISOString().split("T")[0],
-  time: new Date().toLocaleTimeString(),
-  delivererId: Number(waiterId),
-  courses: { ...courses }
-};
+      const newOrder = {
+        orderId,
+        tableNo: Number(tableNo),
+        status: "RECEIVED",
+        orderPrice: totalPrice,
+        date: new Date().toISOString().split("T")[0],
+        time: new Date().toLocaleTimeString(),
+        delivererId: Number(waiterId),
+        courses: { ...courses }
+      };
 
 
-    setDineInOrders(prev => [newOrder, ...prev]);
+      setDineInOrders(prev => [newOrder, ...prev]);
 
-    setCourses({});
-    setTableNo("");
-    alert("Order created (ID: " + orderId + ")");
+      setCourses({});
+      setTableNo("");
+      alert("Order created (ID: " + orderId + ")");
 
-  } catch (err) {
-    console.error(err);
-    alert("Failed to create order");
-  }
-};
+    } catch (err) {
+      console.error(err);
+      alert("Failed to create order");
+    }
+  };
 
 
   /* ================= LOAD ORDERS ================= */
   const loadDineInOrders = async () => {
     setLoading(true);
-    const results = [];
-
-    for (let id = 1; id <= 300; id++) {
-      try {
-        const order = await getOrderById(id);
-        if (order?.tableNo != null) {
-          results.push(order);
-        }
-      } catch {}
+    try {
+      const results = await getDineInOrders();
+      setDineInOrders(results);
+    } catch (err) {
+      console.error("Failed to load dine-in orders:", err);
+    } finally {
+      setLoading(false);
     }
-
-    setDineInOrders(results);
-    setLoading(false);
   };
 
   /* ================= FRONTEND MAGIC ================= */
-  // dine-in siparişlerde gerçekten kullanılan waiter’lar
-  const waiterIds = new Set(dineInOrders.map(o => o.delivererId));
-  const waiters = users.filter(u => waiterIds.has(u.id));
+  // Create an O(1) map for quick waiter name lookups
+  const waiterMap = new Map(users.map(u => [u.id, u.fullName]));
 
-  const getWaiterName = (id) =>
-    users.find(u => u.id === id)?.fullName || `ID ${id}`;
+  const waiters = users;
+
+  const getWaiterName = (id) => waiterMap.get(id) || `ID ${id}`;
 
   /* ================= UI ================= */
   return (
@@ -210,10 +205,10 @@ const newOrder = {
                 <td>
                   {o.courses
                     ? Object.entries(o.courses).map(([c, q]) => (
-                        <div key={c}>
-                          🍴 {c} × {q}
-                        </div>
-                      ))
+                      <div key={c}>
+                        🍴 {c} × {q}
+                      </div>
+                    ))
                     : "-"}
                 </td>
                 <td>{getWaiterName(o.delivererId)}</td>

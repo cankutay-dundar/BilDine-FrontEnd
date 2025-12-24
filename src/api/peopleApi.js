@@ -14,9 +14,17 @@ export const addUser = (data) =>
     })
   });
 
-export const getAllUsers = () =>
-  fetch(`${BASE_URL}/users`).then(res => res.json());
+export const getAllUsers = async () => {
+  const res = await fetch(`${BASE_URL}/users`);
+  if (!res.ok) return [];
+  return res.json();
+};
 
+export const getAllWaiters = async () => {
+  const res = await fetch(`${BASE_URL}/waiters`);
+  if (!res.ok) return [];
+  return res.json();
+};
 export const updateSalary = (fullName, salaryPerHour) =>
   fetch(`${BASE_URL}/users/salary`, {
     method: "PATCH",

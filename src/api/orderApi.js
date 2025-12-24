@@ -1,4 +1,4 @@
-const BASE_URL = "/api/orders";
+const BASE_URL = "http://localhost:8080/api/orders";
 
 /* ======================
    ORDERS – READ
@@ -13,10 +13,21 @@ export const getOrderById = async (orderId) => {
   return res.json();
 };
 
-// ❌ Backend’te yok → boş bırakıyoruz
+// ✅ GET ALL ORDERS
 export const getAllOrders = async () => {
-  console.warn("GET ALL ORDERS endpoint not implemented on backend");
-  return [];
+  const res = await fetch(BASE_URL);
+  if (!res.ok) {
+    throw new Error("Failed to fetch orders");
+  }
+  return res.json();
+};
+
+export const getDineInOrders = async () => {
+  const res = await fetch(`${BASE_URL}/dine-in`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch dine-in orders");
+  }
+  return res.json();
 };
 
 /* ======================
