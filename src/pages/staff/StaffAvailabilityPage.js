@@ -19,6 +19,17 @@ export default function StaffAvailabilityPage() {
   const submit = async (e) => {
     e.preventDefault();
     setErr(""); setMsg("");
+
+    if (!user?.userId) {
+      setErr("No user logged in. Please login first.");
+      return;
+    }
+
+    if (!date || !start || !end) {
+      setErr("Please provide date, start, and end times.");
+      return;
+    }
+
     try {
       const res = await addAvailability(user.userId, { date, start, end });
       setMsg(res?.message || "Availability request submitted");
@@ -30,6 +41,17 @@ export default function StaffAvailabilityPage() {
   const cancel = async (e) => {
     e.preventDefault();
     setErr(""); setMsg("");
+
+    if (!user?.userId) {
+      setErr("No user logged in. Please login first.");
+      return;
+    }
+
+    if (!cDate || !cStart || !cEnd) {
+      setErr("Please provide date, start, and end times for cancellation.");
+      return;
+    }
+
     try {
       const res = await deleteAvailability(user.userId, { date: cDate, start: cStart, end: cEnd });
       setMsg(res?.message || "Availability request deleted");

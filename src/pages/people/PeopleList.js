@@ -1,6 +1,16 @@
 import { useEffect, useState } from "react";
-import { getAllUsers, getUserKindByUserId, getUserSpecialValue, getPayrollAmount, decreasePayroll } from "../../api/peopleApi";
+import { getAllUsers, getUserKindByUserId, getUserSpecialValue, getPayrollAmount, decreasePayroll, addRegularShift } from "../../api/peopleApi";
 import { Link } from "react-router-dom";
+
+const DAYS = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday"
+];
 
 function PeopleList() {
   const [users, setUsers] = useState([]);
@@ -8,22 +18,32 @@ function PeopleList() {
   const [payrollAmount, setPayrollAmount] = useState(0);
   const [decreaseAmount, setDecreaseAmount] = useState('');
 
+  const [addingShiftFor, setAddingShiftFor] = useState(null);
+  const [day, setDay] = useState(0);
+  const [start, setStart] = useState("09:00");
+  const [end, setEnd] = useState("17:00");
+  const [msg, setMsg] = useState("");
+
   useEffect(() => {
     const fetchUsers = async () => {
-      const fetchedUsers = await getAllUsers();
-      const enhancedUsers = await Promise.all(
-        fetchedUsers.map(async (u) => {
-          try {
-            const kind = await getUserKindByUserId(u.id);
-            const specialValue = await getUserSpecialValue(u.id);
-            return { ...u, kind, specialValue };
-          } catch (error) {
-            console.error(`Error fetching details for user ${u.id}:`, error);
-            return { ...u, kind: 'BASE_USER', specialValue: '' };
-          }
-        })
-      );
-      setUsers(enhancedUsers);
+      try {
+        const fetchedUsers = await getAllUsers();
+        const enhancedUsers = await Promise.all(
+          fetchedUsers.map(async (u) => {
+            try {
+              const kind = await getUserKindByUserId(u.id);
+              const specialValue = await getUserSpecialValue(u.id);
+              return { ...u, kind, specialValue };
+            } catch (error) {
+              console.error(`Error fetching details for user ${u.id}:`, error);
+              return { ...u, kind: 'BASE_USER', specialValue: '' };
+            }
+          })
+        );
+        setUsers(enhancedUsers);
+      } catch (err) {
+        console.error("Failed to load users:", err);
+      }
     };
     fetchUsers();
   }, []);
@@ -48,7 +68,6 @@ function PeopleList() {
       await decreasePayroll(selectedUserForPayroll, parseFloat(decreaseAmount));
       alert('Payroll decreased successfully');
       setSelectedUserForPayroll(null);
-      // Optionally refresh users or update payroll
     } catch (error) {
       alert('Failed to decrease payroll');
     }
@@ -56,6 +75,17 @@ function PeopleList() {
 
   const handleCancelDecrease = () => {
     setSelectedUserForPayroll(null);
+  };
+
+  const handleAddShift = async (userId) => {
+    try {
+      await addRegularShift(userId, day, start, end);
+      setMsg(`Shift added for user ${userId}`);
+      setAddingShiftFor(null);
+    } catch (err) {
+      console.error(err);
+      setMsg("Failed to add shift");
+    }
   };
 
   const groupedUsers = {
@@ -113,7 +143,38 @@ function PeopleList() {
                   <Link to={`/people/promote?userId=${u.id}`}>
                     <button>⬆️ Promote</button>
                   </Link>{" "}
-                  <button onClick={() => handleDecreasePayrollClick(u.id)}>💰 Decrease Payroll</button>
+                  <button onClick={() => handleDecreasePayrollClick(u.id)}>💰 Decrease Payroll</button>{" "}
+                  <button onClick={() => setAddingShiftFor(u.id)}>➕ Add Shift</button>
+
+                  {/* INLINE ADD SHIFT FORM */}
+                  {addingShiftFor === u.id && (
+                    <div style={{ marginTop: 10, border: '1px solid #ddd', padding: 10, borderRadius: 4 }}>
+                      <select
+                        value={day}
+                        onChange={e => setDay(Number(e.target.value))}
+                      >
+                        {DAYS.map((d, i) => (
+                          <option key={i} value={i}>{d}</option>
+                        ))}
+                      </select>{" "}
+                      <input
+                        type="time"
+                        value={start}
+                        onChange={e => setStart(e.target.value)}
+                      />{" "}
+                      <input
+                        type="time"
+                        value={end}
+                        onChange={e => setEnd(e.target.value)}
+                      />{" "}
+                      <button onClick={() => handleAddShift(u.id)}>
+                        Add
+                      </button>{" "}
+                      <button onClick={() => setAddingShiftFor(null)}>
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -132,29 +193,20 @@ function PeopleList() {
         <Link to="/people/add">
           <button>➕ Add User</button>
         </Link>{" "}
-
         <Link to="/people/promote">
           <button>⬆️ Promote User</button>
         </Link>{" "}
-
-        {/* 🔥 REQUEST CREATE */}
-        <Link to="/people/availability">
-          <button>🕒 Create Availability / Time-Off</button>
-        </Link>{" "}
-
-        {/* 🔥 MANAGER ONLY */}
         <Link to="/people/availability/requests">
-          <button>📥 View Requests</button>
+          <button>🕒 Availability Requests</button>
         </Link>{" "}
-
-        <Link to="/people/schedule">
-          <button>📅 Schedule</button>
+        <Link to="/people/timeoff/requests">
+          <button>⏱ Time-Off Requests</button>
         </Link>
       </div>
 
       {/* PAYROLL DECREASE FORM */}
       {selectedUserForPayroll && (
-       <div style={{ 
+        <div style={{
           border: '1px solid #444',
           padding: 20,
           marginBottom: 20,
@@ -164,13 +216,13 @@ function PeopleList() {
           <h4>Decrease Payroll for User ID: {selectedUserForPayroll}</h4>
           <p>Current Payroll: ${payrollAmount.toFixed(2)}</p>
           <label>
-            Decrease Amount: 
-            <input 
-              type="number" 
-              value={decreaseAmount} 
-              onChange={(e) => setDecreaseAmount(e.target.value)} 
-              min="0" 
-              step="0.01" 
+            Decrease Amount:
+            <input
+              type="number"
+              value={decreaseAmount}
+              onChange={(e) => setDecreaseAmount(e.target.value)}
+              min="0"
+              step="0.01"
             />
           </label>
           <br />
@@ -179,10 +231,14 @@ function PeopleList() {
         </div>
       )}
 
+      {msg && <p style={{ color: "green" }}>{msg}</p>}
+
       {/* USERS TABLES */}
       {Object.keys(groupedUsers).map(userType => renderTable(userType, groupedUsers[userType]))}
     </div>
   );
 }
+
+export default PeopleList;
 
 export default PeopleList;

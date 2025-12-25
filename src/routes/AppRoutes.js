@@ -38,6 +38,7 @@ import AddUser from "../pages/people/AddUser";
 import PromoteUser from "../pages/people/PromoteUser";
 import ScheduleView from "../pages/people/ScheduleView";
 import AvailabilityRequest from "../pages/people/AvailabilityRequest";
+import TimeOffRequestList from "../pages/people/TimeOffRequestList";
 
 /* AUTH & DASHBOARD */
 import Login from "../auth/Login";
@@ -99,7 +100,8 @@ function AppRoutes() {
         <Route path="/people/promote" element={<PromoteUser />} />
         <Route path="/schedule" element={<ScheduleView />} />
         <Route path="/people/availability" element={<AvailabilityRequest />} />
-        <Route path="/people/availability/requests" element={<AvailabilityRequestsList />} />
+        <Route path="/people/availability/requests" element={<AvailabilityRequestsList />}/>
+        <Route path="/people/timeoff/requests" element={<TimeOffRequestList />} />
       </Route>
     </Routes>
   );

@@ -15,11 +15,25 @@ export default function StaffTimeOffPage() {
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
+  // Format HH:mm -> HH:mm:ss for backend
+  const formatTime = (timeStr) => {
+    if (!timeStr) return null;
+    if (timeStr.length === 5) return timeStr + ":00";
+    return timeStr;
+  };
+
   const submit = async (e) => {
     e.preventDefault();
-    setErr(""); setMsg("");
+    if (!user?.userId) return setErr("User not logged in");
+
+    setErr(""); 
+    setMsg("");
     try {
-      const res = await addTimeOff(user.userId, { date, start, end });
+      const res = await addTimeOff(user.userId, {
+        date,
+        start: formatTime(start),
+        end: formatTime(end)
+      });
       setMsg(res?.message || "Time-off request submitted");
     } catch (e2) {
       setErr(e2.message);
@@ -28,9 +42,15 @@ export default function StaffTimeOffPage() {
 
   const cancel = async (e) => {
     e.preventDefault();
-    setErr(""); setMsg("");
+    if (!user?.userId) return setErr("User not logged in");
+
+    setErr(""); 
+    setMsg("");
     try {
-      const res = await deleteTimeOff(user.userId, { date: cDate, start: cStart });
+      const res = await deleteTimeOff(user.userId, {
+        date: cDate,
+        start: formatTime(cStart)
+      });
       setMsg(res?.message || "Time-off request deleted");
     } catch (e2) {
       setErr(e2.message);

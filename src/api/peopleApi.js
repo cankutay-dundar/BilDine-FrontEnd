@@ -98,21 +98,63 @@ export const getWorkHours = (userId) =>
   fetch(`${BASE_URL}/schedule/${userId}/work-hours`)
     .then(res => res.json());
 
-export const getTimeOffRequests = (userId) =>
-  fetch(`${BASE_URL}/schedule/${userId}/time-off`)
-    .then(res => res.json());
+export const getTimeOffRequests = async () => {
+  const res = await fetch("/api/manager/timeoff/pending");
+  return res.json();
+};
 
-/* ================= AVAILABILITY REQUESTS ================= */
+export const approveTimeOff = (userId, date, startTime, endTime) =>
+  fetch(
+    `/api/manager/timeoff/approve?userId=${userId}&date=${date}&start=${startTime}&end=${endTime}`,
+    { method: "POST" }
+  );
+
+export async function rejectTimeOff(userId, date) {
+  const params = new URLSearchParams({ userId, date });
+
+  const res = await fetch(
+    `/api/manager/timeoff/reject?${params.toString()}`,
+    { method: "POST" }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    console.error("Reject failed:", text);
+    throw new Error("Failed to reject time-off request");
+  }
+
+  return res.json();
+}
+
+export const rejectAvailability = async (userId, date, startTime, endTime) => {
+  const res = await fetch(
+    `/api/manager/availability/reject?` +
+      `userId=${userId}` +
+      `&date=${date}` +
+      `&start=${startTime}` +
+      `&end=${endTime}`,
+    {
+      method: "POST"
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to reject availability");
+  }
+
+  return res.json(); // { message }
+};
+
+  /* ================= AVAILABILITY REQUESTS ================= */
 
 export const getAvailabilityRequests = () =>
-  fetch(`${BASE_URL}/availability/requests`)
+  fetch(`/api/manager/availability/pending`)
     .then(res => res.json());
 
-export const approveAvailability = (userId, date, startTime) =>
-  fetch(`${BASE_URL}/availability/approve`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId, date, startTime })
+export const approveAvailability = (userId, date, startTime, endTime) =>
+  fetch(`/api/manager/availability/approve?userId=${userId}&date=${date}&start=${startTime}&end=${endTime}`, {
+    method: "POST"
   });
 
 /* ================= AVAILABILITY / TIME OFF ================= */
@@ -136,7 +178,7 @@ export const getTimeOffByUserId = (userId) =>
 /* ================= REGULAR SHIFTS ================= */
 
 export const getRegularShiftByUserId = (userId) =>
-  fetch(`${STAFF_BASE}/${userId}/regular-shift`)
+  fetch(`/api/manager/regular-shift?userId=${userId}`)
     .then(res => {
       if (!res.ok) throw new Error("Regular shift not found");
       return res.json();
@@ -177,3 +219,10 @@ export const checkOut = (userId) =>
   fetch(`${STAFF_BASE}/${userId}/work-hours/check-out`, {
     method: "POST"
   });
+
+export const addRegularShift = (userId, dayOfWeek, start, end) =>
+  fetch(`/api/manager/regular-shift?userId=${userId}&dayOfWeek=${dayOfWeek}&start=${start}&end=${end}`, {
+    method: "POST"
+  }).then(res => res.json());
+
+  

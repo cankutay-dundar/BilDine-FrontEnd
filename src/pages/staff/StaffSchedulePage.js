@@ -3,7 +3,6 @@ import { useAuth } from "../../auth/AuthContext";
 import { getRegularShifts } from "../../api/staffApi";
 
 const dayName = (d) => {
-  // backend bazen 0..6 (Sun..Sat) veya 1..7 (Mon..Sun) gelebilir
   const map0 = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
   const map1 = ["", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   if (d === null || d === undefined) return "—";
@@ -33,6 +32,12 @@ export default function StaffSchedulePage() {
 
   useEffect(() => {
     const run = async () => {
+      if (!user?.userId) {
+        setErr("User not logged in");
+        setRows([]);
+        return;
+      }
+
       setErr("");
       setLoading(true);
       try {
@@ -40,12 +45,13 @@ export default function StaffSchedulePage() {
         setRows(Array.isArray(data) ? data : []);
       } catch (e) {
         setErr(e.message);
+        setRows([]);
       } finally {
         setLoading(false);
       }
     };
     run();
-  }, [user.userId]);
+  }, [user?.userId]);
 
   return (
     <div>
