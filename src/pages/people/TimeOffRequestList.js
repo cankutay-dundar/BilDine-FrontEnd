@@ -1,23 +1,23 @@
 import { useEffect, useState } from "react";
 import {
-  getAvailabilityRequests,
-  approveAvailability,
-  rejectAvailability
+  getTimeOffRequests,
+  approveTimeOff,
+  rejectTimeOff
 } from "../../api/peopleApi";
 
-function AvailabilityRequestsList() {
+function TimeOffRequestList() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load availability requests
+  // Load pending time-off requests
   const load = async () => {
     setLoading(true);
     try {
-      const data = await getAvailabilityRequests();
-      console.log("📥 AVAILABILITY REQUESTS:", data);
+      const data = await getTimeOffRequests();
+      console.log("📥 TIME OFF REQUESTS:", data);
       setRequests(Array.isArray(data) ? data : []);
     } catch (err) {
-      console.error("Failed to load requests:", err);
+      console.error("Failed to load time-off requests:", err);
       setRequests([]);
     } finally {
       setLoading(false);
@@ -28,45 +28,35 @@ function AvailabilityRequestsList() {
     load();
   }, []);
 
-  // Approve handler
+  // ✅ Approve handler
   const approve = async (r) => {
     try {
-      await approveAvailability(
-        r.userId,
-        r.date,
-        r.startTime,
-        r.endTime
-      );
-      alert("Request approved");
+      await approveTimeOff(r.userId, r.date);
+      alert("Time-off request approved");
       load();
     } catch (err) {
-      alert("Failed to approve request");
+      alert("Failed to approve time-off request");
       console.error(err);
     }
   };
 
-  // Reject handler
+  // ✅ Reject handler (THIS is where it goes)
   const reject = async (r) => {
-    if (!window.confirm("Reject this availability request?")) return;
+    if (!window.confirm("Reject this time-off request?")) return;
 
     try {
-      await rejectAvailability(
-        r.userId,
-        r.date,
-        r.startTime,
-        r.endTime
-      );
-      alert("Request rejected");
+      await rejectTimeOff(r.userId, r.date);
+      alert("Time-off request rejected");
       load();
     } catch (err) {
-      alert("Failed to reject request");
+      alert("Failed to reject time-off request");
       console.error(err);
     }
   };
 
   return (
     <div>
-      <h2>📥 Availability Requests</h2>
+      <h2>📤 Time Off Requests</h2>
 
       {loading && <p>Loading...</p>}
 
@@ -75,8 +65,6 @@ function AvailabilityRequestsList() {
           <tr>
             <th>User ID</th>
             <th>Date</th>
-            <th>Start</th>
-            <th>End</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
@@ -85,18 +73,16 @@ function AvailabilityRequestsList() {
         <tbody>
           {requests.length === 0 && !loading && (
             <tr>
-              <td colSpan="6" align="center">
+              <td colSpan="4" align="center">
                 No requests
               </td>
             </tr>
           )}
 
           {requests.map((r) => (
-            <tr key={`${r.userId}-${r.date}-${r.startTime}`}>
+            <tr key={`${r.userId}-${r.date}`}>
               <td>{r.userId}</td>
               <td>{r.date}</td>
-              <td>{r.startTime}</td>
-              <td>{r.endTime}</td>
               <td>
                 {r.approved === null && "⏳ Pending"}
                 {r.approved === true && "✅ Approved"}
@@ -105,10 +91,7 @@ function AvailabilityRequestsList() {
               <td>
                 {r.approved === null && (
                   <>
-                    <button onClick={() => approve(r)}>
-                      Approve
-                    </button>
-
+                    <button onClick={() => approve(r)}>Approve</button>
                     <button
                       onClick={() => reject(r)}
                       style={{ marginLeft: 8, color: "crimson" }}
@@ -126,4 +109,4 @@ function AvailabilityRequestsList() {
   );
 }
 
-export default AvailabilityRequestsList;
+export default TimeOffRequestList;

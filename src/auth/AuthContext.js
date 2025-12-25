@@ -7,11 +7,11 @@ export function AuthProvider({ children }) {
     JSON.parse(localStorage.getItem("user"))
   );
 
-  const login = (fullName, role) => {
-    const userData = { fullName, role };
-    localStorage.setItem("user", JSON.stringify(userData));
-    setUser(userData);
-  };
+const login = (fullName, role, userId) => {
+  const userData = { userId, fullName, role };
+  localStorage.setItem("user", JSON.stringify(userData));
+  setUser(userData);
+};
 
   const logout = () => {
     localStorage.removeItem("user");

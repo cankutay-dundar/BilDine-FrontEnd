@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../../auth/AuthContext";
 import { checkIn, checkOut } from "../../api/staffApi";
 
@@ -8,8 +8,18 @@ export default function StaffWorkHoursPage() {
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    console.log("Logged user:", user);
+  }, [user]);
+
   const run = async (fn) => {
-    setErr(""); setMsg("");
+    if (!user?.userId) {
+      setErr("User not logged in");
+      return;
+    }
+
+    setErr("");
+    setMsg("");
     setLoading(true);
     try {
       const res = await fn(user.userId);
@@ -20,6 +30,15 @@ export default function StaffWorkHoursPage() {
       setLoading(false);
     }
   };
+
+  if (!user?.userId) {
+    return (
+      <div>
+        <h2>✅ Work Hours</h2>
+        <p style={{ color: "crimson" }}>You are not logged in. Please log in first.</p>
+      </div>
+    );
+  }
 
   return (
     <div>

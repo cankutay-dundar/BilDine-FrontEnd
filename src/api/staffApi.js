@@ -1,13 +1,5 @@
 const BASE = "/api/staff";
 
-const toQuery = (params) => {
-  const sp = new URLSearchParams();
-  Object.entries(params).forEach(([k, v]) => {
-    if (v !== undefined && v !== null && v !== "") sp.append(k, v);
-  });
-  return sp.toString();
-};
-
 const handle = async (res) => {
   const isJson = res.headers.get("content-type")?.includes("application/json");
   const data = isJson ? await res.json() : null;
@@ -21,41 +13,42 @@ const handle = async (res) => {
 
 /* ================= SCHEDULE ================= */
 export const getRegularShifts = async (userId) => {
+  if (!userId) throw new Error("User not logged in");
   const res = await fetch(`${BASE}/${userId}/regular-shift`);
   return handle(res); // List<RegularShiftSlot>
 };
 
 /* ================= AVAILABILITY ================= */
 export const addAvailability = async (userId, { date, start, end }) => {
-  const qs = toQuery({ date, start, end });
-  const res = await fetch(`${BASE}/${userId}/availability?${qs}`, {
-    method: "POST"
+  if (!userId) throw new Error("User not logged in");
+  const res = await fetch(`${BASE}/${userId}/availability?date=${date}&start=${start}&end=${end}`, {
+    method: "POST",
   });
   return handle(res); // {message}
 };
 
 export const deleteAvailability = async (userId, { date, start, end }) => {
-  const qs = toQuery({ date, start, end });
-  const res = await fetch(`${BASE}/${userId}/availability?${qs}`, {
-    method: "DELETE"
+  if (!userId) throw new Error("User not logged in");
+  const res = await fetch(`${BASE}/${userId}/availability?date=${date}&start=${start}&end=${end}`, {
+    method: "DELETE",
   });
   return handle(res); // {message}
 };
 
 /* ================= TIME OFF ================= */
 export const addTimeOff = async (userId, { date, start, end }) => {
-  const qs = toQuery({ date, start, end });
-  const res = await fetch(`${BASE}/${userId}/timeoff?${qs}`, {
-    method: "POST"
+  if (!userId) throw new Error("User not logged in");
+  const res = await fetch(`${BASE}/${userId}/timeoff?date=${date}&start=${start}&end=${end}`, {
+    method: "POST",
   });
   return handle(res); // {message}
 };
 
-// backend deleteTimeOff: date + start (end yok)
+// backend deleteTimeOff: date + start only
 export const deleteTimeOff = async (userId, { date, start }) => {
-  const qs = toQuery({ date, start });
-  const res = await fetch(`${BASE}/${userId}/timeoff?${qs}`, {
-    method: "DELETE"
+  if (!userId) throw new Error("User not logged in");
+  const res = await fetch(`${BASE}/${userId}/timeoff?date=${date}&start=${start}`, {
+    method: "DELETE",
   });
 
   // 204 No Content -> handle() json beklemesin
@@ -65,15 +58,17 @@ export const deleteTimeOff = async (userId, { date, start }) => {
 
 /* ================= WORK HOURS ================= */
 export const checkIn = async (userId) => {
+  if (!userId) throw new Error("User not logged in");
   const res = await fetch(`${BASE}/${userId}/work-hours/check-in`, {
-    method: "POST"
+    method: "POST",
   });
   return handle(res); // {message}
 };
 
 export const checkOut = async (userId) => {
+  if (!userId) throw new Error("User not logged in");
   const res = await fetch(`${BASE}/${userId}/work-hours/check-out`, {
-    method: "POST"
+    method: "POST",
   });
   return handle(res); // {message}
 };
