@@ -7,6 +7,7 @@ import {
   getPayrollAmount,
   decreasePayroll,
   addRegularShift,
+  updateCleanerArea,
 } from "../../api/peopleApi";
 import { Link } from "react-router-dom";
 
@@ -97,7 +98,19 @@ function PeopleList() {
     MANAGER: "Level",
     KITCHEN_STAFF: "Kitchen Role",
     DELIVERER: "Deliverer Type",
-    CLEANER: "Duty",
+    CLEANER: "Area",
+  };
+
+  const CLEANER_AREAS = ["kitchen", "bathroom", "tables", "dining area"];
+
+  const handleAreaChange = async (userId, newArea) => {
+    try {
+      await updateCleanerArea(userId, newArea);
+      const cleaners = await getCleaners();
+      setGroupedUsers(prev => ({ ...prev, CLEANER: cleaners }));
+    } catch (err) {
+      alert("Failed to update area");
+    }
   };
 
   const renderTable = (userType, summaries) => {
@@ -129,7 +142,24 @@ function PeopleList() {
                   <td>{u.id}</td>
                   <td>{u.fullName}</td>
                   <td>{u.salaryPerHour}</td>
-                  {hasSpecialColumn && <td>{s.specialValue}</td>}
+                  {hasSpecialColumn && (
+                    <td>
+                      {userType === "CLEANER" ? (
+                        <select
+                          value={s.specialValue}
+                          onChange={(e) => handleAreaChange(u.id, e.target.value)}
+                        >
+                          {CLEANER_AREAS.map((a) => (
+                            <option key={a} value={a}>
+                              {a}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        s.specialValue
+                      )}
+                    </td>
+                  )}
 
                   <td>
                     <Link to={`/schedule`}>

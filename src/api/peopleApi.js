@@ -73,6 +73,13 @@ export const decreasePayroll = (userId, amount) =>
     method: "POST"
   });
 
+export const updateCleanerArea = (userId, area) =>
+  fetch(`${BASE_URL}/cleaner/area`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId, area })
+  });
+
 export const updateSalary = (fullName, salaryPerHour) =>
   fetch(`${BASE_URL}/users/salary`, {
     method: "PATCH",
@@ -153,10 +160,10 @@ export async function rejectTimeOff(userId, date) {
 export const rejectAvailability = async (userId, date, startTime, endTime) => {
   const res = await fetch(
     `/api/manager/availability/reject?` +
-      `userId=${userId}` +
-      `&date=${date}` +
-      `&start=${startTime}` +
-      `&end=${endTime}`,
+    `userId=${userId}` +
+    `&date=${date}` +
+    `&start=${startTime}` +
+    `&end=${endTime}`,
     {
       method: "POST"
     }
@@ -170,7 +177,7 @@ export const rejectAvailability = async (userId, date, startTime, endTime) => {
   return res.json(); // { message }
 };
 
-  /* ================= AVAILABILITY REQUESTS ================= */
+/* ================= AVAILABILITY REQUESTS ================= */
 
 export const getAvailabilityRequests = () =>
   fetch(`/api/manager/availability/pending`)
@@ -249,4 +256,3 @@ export const addRegularShift = (userId, dayOfWeek, start, end) =>
     method: "POST"
   }).then(res => res.json());
 
-  
