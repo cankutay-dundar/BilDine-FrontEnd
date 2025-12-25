@@ -30,13 +30,6 @@ export const getDineInOrders = async () => {
   return res.json();
 };
 
-export const getOrderDetails = async (orderId) => {
-  const res = await fetch(`${BASE_URL}/${orderId}/details`);
-  if (!res.ok) throw new Error("Failed to fetch order details");
-  return res.json();
-};
-
-
 /* ======================
    CREATE ORDERS
 ====================== */
