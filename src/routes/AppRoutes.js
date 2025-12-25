@@ -17,8 +17,6 @@ import OrderCreateOnline from "../pages/orders/OrderCreateOnline";
 import OrderDetail from "../pages/orders/OrderDetail";
 import ReadyOnlineOrders from "../pages/orders/ReadyOnlineOrders";
 import AllOrders from "../pages/orders/AllOrders";
-import UserOnlineOrderStatus from "../pages/user/UserOnlineOrderStatus";
-
 
 /* COURSES */
 import CourseList from "../pages/courses/CourseList";
@@ -91,10 +89,8 @@ function AppRoutes() {
           <Route path="/staff/timeoff" element={<StaffTimeOffPage />} />
           <Route path="/staff/work-hours" element={<StaffWorkHoursPage />} />
           <Route path="/user/online" element={<UserOnlineOrderCreate />} />
-          <Route path="/user/order/:id" element={<UserOnlineOrderStatus />} />
 
-
-          {/* PEOPLE */}
+        {/* PEOPLE */}
         <Route path="/people" element={<PeopleList />} />
         <Route path="/people/add" element={<AddUser />} />
         <Route path="/people/promote" element={<PromoteUser />} />
