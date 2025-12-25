@@ -21,7 +21,7 @@ function ItemEdit() {
 
     setForm(prev => ({
       ...prev,
-      [name]: type === "checkbox" ? checked : Number(value)
+      [name]: type === "checkbox" ? checked : (type === "date" ? value : Number(value))
     }));
   };
 
@@ -32,7 +32,8 @@ function ItemEdit() {
       price: form.price,
       amount: form.amount,
       containsMeat: form.containsMeat,
-      containsGluten: form.containsGluten
+      containsGluten: form.containsGluten,
+      expiryDate: form.expiryDate || null
     };
 
     await updateItem(form.name, payload);
@@ -81,6 +82,16 @@ function ItemEdit() {
             onChange={handleChange}
           />
           Contains Gluten
+        </label>
+        <br />
+        <label>
+          Expiry Date:
+          <input
+            name="expiryDate"
+            type="date"
+            value={form.expiryDate || ""}
+            onChange={handleChange}
+          />
         </label>
 
         <br /><br />

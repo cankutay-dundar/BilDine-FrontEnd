@@ -10,7 +10,8 @@ function ItemCreate() {
     price: "",
     amount: "",
     containsMeat: false,
-    containsGluten: false
+    containsGluten: false,
+    expiryDate: ""
   });
 
   const handleChange = (e) => {
@@ -33,7 +34,8 @@ function ItemCreate() {
       price: Number(form.price),
       amount: Number(form.amount),
       containsMeat: form.containsMeat,
-      containsGluten: form.containsGluten
+      containsGluten: form.containsGluten,
+      expiryDate: form.expiryDate || null
     };
 
     console.log("🟠 PAYLOAD TO BACKEND:", payload);
@@ -102,6 +104,16 @@ function ItemCreate() {
             onChange={handleChange}
           />
           Contains Gluten
+        </label>
+        <br />
+        <label>
+          Expiry Date:
+          <input
+            name="expiryDate"
+            type="date"
+            value={form.expiryDate}
+            onChange={handleChange}
+          />
         </label>
 
         <br /><br />

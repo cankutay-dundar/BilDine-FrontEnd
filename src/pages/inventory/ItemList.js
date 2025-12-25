@@ -43,6 +43,7 @@ function ItemList() {
             <th>Amount</th>
             <th>Meat</th>
             <th>Gluten</th>
+            <th>Expiry Date</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -50,6 +51,9 @@ function ItemList() {
         <tbody>
           {items.map((item) => {
             const hasAlert = alerts.some(a => a.itemName === item.name);
+            const today = new Date().toISOString().split('T')[0];
+            const isExpired = item.expiryDate && item.expiryDate < today;
+
             return (
               <tr
                 key={item.name}
@@ -67,6 +71,16 @@ function ItemList() {
                 </td>
                 <td>-</td>
                 <td>-</td>
+                <td>
+                  <span style={isExpired ? { color: "#f87171", fontWeight: "bold" } : {}}>
+                    {item.expiryDate || "N/A"}
+                  </span>
+                  {isExpired && (
+                    <span style={{ marginLeft: 8, fontSize: "0.85em", color: "#f87171" }}>
+                      🕒 Expired
+                    </span>
+                  )}
+                </td>
                 <td>
                   <Link to={`/items/edit/${item.name}`}>Edit</Link>{" "}
                   <button onClick={() => handleDelete(item.name)}>
