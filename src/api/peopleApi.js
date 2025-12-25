@@ -45,7 +45,7 @@ export const getPayrollAmount = async (userId) => {
 };
 
 export const decreasePayroll = (userId, amount) =>
-  fetch(`${BASE_URL}/users/${userId}/decrease-payroll?userId=${userId}&amount=${amount}`, {
+  fetch(`${BASE_URL}/decrease-payroll?userId=${userId}&amount=${amount}`, {
     method: "POST"
   });
 
