@@ -52,6 +52,16 @@ function UserOnlineOrderCreate() {
   const submit = async (e) => {
     e.preventDefault();
 
+    if (Object.keys(courses).length === 0) {
+      alert("Please add at least one course.");
+      return;
+    }
+    if (!address.trim()) {
+      alert("Address is required.");
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const orderId = await createOnlineOrder(
           onlineCustomerId ? Number(onlineCustomerId) : null,
@@ -60,91 +70,95 @@ function UserOnlineOrderCreate() {
           courses
       );
 
-      alert(`Online order created. \nOrder ID: ${orderId}`);
+      alert(`Online order created.\nOrder ID: ${orderId}`);
       navigate(`/user/order/${orderId}`);
     } catch (err) {
       console.error(err);
       alert("Failed to create online order.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
 
+
   return (
-    <div style={{ maxWidth: 900 }}>
-      <h2>Online Order</h2>
+      <div style={{ maxWidth: 900 }}>
+        <h2>Online Order</h2>
 
-      <div style={{ border: "1px solid #ddd", padding: 16 }}>
-        <h4>Create</h4>
+        <div style={{ border: "1px solid #ddd", padding: 16 }}>
+          <h4>Create</h4>
 
-        <input
-          placeholder="Customer ID (optional)"
-          value={onlineCustomerId}
-          onChange={(e) => setOnlineCustomerId(e.target.value)}
-        />
-        <br /><br />
+          <input
+              placeholder="Customer ID (optional)"
+              value={onlineCustomerId}
+              onChange={(e) => setOnlineCustomerId(e.target.value)}
+          />
+          <br /><br />
 
-        <input
-          placeholder="Address"
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          style={{ width: "100%" }}
-        />
-        <br /><br />
+          <input
+              placeholder="Address"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              style={{ width: "100%" }}
+          />
+          <br /><br />
 
-        <input
-          placeholder="Phone"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-        />
-        <br /><br />
+          <input
+              placeholder="Phone"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+          />
+          <br /><br />
 
-        <select
-          value={selectedCourse}
-          onChange={(e) => setSelectedCourse(e.target.value)}
-        >
-          <option value="">Select Course</option>
-          {coursesList.map((c) => (
-            <option key={c.courseName} value={c.courseName}>
-              {c.courseName}
-            </option>
-          ))}
-        </select>
-
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(e.target.value)}
-          style={{ width: 60, marginLeft: 6 }}
-        />
-
-        <button onClick={addCourse} style={{ marginLeft: 6 }}>
-          Add
-        </button>
-
-        {Object.keys(courses).length > 0 && (
-          <ul style={{ marginTop: 10 }}>
-            {Object.entries(courses).map(([n, q]) => (
-              <li key={n}>
-                {n} × {q}{" "}
-                <button type="button" onClick={() => removeCourse(n)}>
-                  remove
-                </button>
-              </li>
+          <select
+              value={selectedCourse}
+              onChange={(e) => setSelectedCourse(e.target.value)}
+          >
+            <option value="">Select Course</option>
+            {coursesList.map((c) => (
+                <option key={c.courseName} value={c.courseName}>
+                  {c.courseName}
+                </option>
             ))}
-          </ul>
-        )}
+          </select>
 
-        <button onClick={submit} disabled={submitting}>
-          {submitting ? "Creating..." : "Create Order"}
-        </button>
+          <input
+              type="number"
+              min="1"
+              value={quantity}
+              onChange={(e) => setQuantity(e.target.value)}
+              style={{ width: 60, marginLeft: 6 }}
+          />
 
-        <button onClick={clearForm} style={{ marginLeft: 8 }} disabled={submitting}>
-          Clear
-        </button>
+          <button type="button" onClick={addCourse} style={{ marginLeft: 6 }} disabled={submitting}>
+            Add
+          </button>
+
+          {Object.keys(courses).length > 0 && (
+              <ul style={{ marginTop: 10 }}>
+                {Object.entries(courses).map(([n, q]) => (
+                    <li key={n}>
+                      {n} × {q}{" "}
+                      <button type="button" onClick={() => removeCourse(n)} disabled={submitting}>
+                        remove
+                      </button>
+                    </li>
+                ))}
+              </ul>
+          )}
+
+          <button type="button" onClick={submit} disabled={submitting}>
+            {submitting ? "Creating..." : "Create Order"}
+          </button>
+
+          <button type="button" onClick={clearForm} style={{ marginLeft: 8 }} disabled={submitting}>
+            Clear
+          </button>
+        </div>
       </div>
-    </div>
   );
+
 }
 
 export default UserOnlineOrderCreate;
