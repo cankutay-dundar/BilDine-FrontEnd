@@ -1,29 +1,20 @@
 import { useEffect, useState } from "react";
-import { getOrderById } from "../../api/orderApi";
+import { getAllOrders } from "../../api/orderApi";
 
 function AllOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const MAX_ID = 500; // 🔥 DB’de max kaç olabilir diye makul limit
-
   const loadAllOrders = async () => {
     setLoading(true);
-    const results = [];
-
-    for (let id = 1; id <= MAX_ID; id++) {
-      try {
-        const order = await getOrderById(id);
-        if (order) {
-          results.push(order);
-        }
-      } catch {
-        // ❗ 404 → sadece geç, durma
-      }
+    try {
+      const data = await getAllOrders();
+      setOrders(data);
+    } catch (error) {
+      console.error("Failed to load orders:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setOrders(results);
-    setLoading(false);
   };
 
   useEffect(() => {

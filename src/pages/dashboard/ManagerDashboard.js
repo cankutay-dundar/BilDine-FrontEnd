@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { getOrderById } from "../../api/orderApi";
+import { getAllOrders } from "../../api/orderApi";
 import { getAllUsers } from "../../api/peopleApi";
 
 function Dashboard() {
@@ -12,42 +12,30 @@ function Dashboard() {
     staffCount: 0
   });
 
-  const MAX_ID = 500;
-
   useEffect(() => {
     loadStats();
   }, []);
 
   const loadStats = async () => {
-    let totalOrders = 0;
-    let onlineOrders = 0;
-    let dineInOrders = 0;
-    let totalRevenue = 0;
+    try {
+      const orders = await getAllOrders();
+      const users = await getAllUsers();
 
-    for (let id = 1; id <= MAX_ID; id++) {
-      try {
-        const o = await getOrderById(id);
-        if (!o) continue;
+      const totals = orders.reduce((acc, o) => {
+        acc.totalOrders++;
+        acc.totalRevenue += Number(o.orderPrice || 0);
+        if (o.tableNo != null) acc.dineInOrders++;
+        else acc.onlineOrders++;
+        return acc;
+      }, { totalOrders: 0, onlineOrders: 0, dineInOrders: 0, totalRevenue: 0 });
 
-        totalOrders++;
-        totalRevenue += Number(o.orderPrice || 0);
-
-        if (o.tableNo != null) dineInOrders++;
-        else onlineOrders++;
-      } catch {
-        // skip missing
-      }
+      setStats({
+        ...totals,
+        staffCount: users.length
+      });
+    } catch (error) {
+      console.error("Failed to load dashboard stats:", error);
     }
-
-    const users = await getAllUsers();
-
-    setStats({
-      totalOrders,
-      onlineOrders,
-      dineInOrders,
-      totalRevenue,
-      staffCount: users.length
-    });
   };
 
   const Card = ({ title, value, to }) => (

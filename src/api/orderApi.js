@@ -69,7 +69,6 @@ export const createDineInOrder = async (waiterId, tableNo, courses) => {
   return data;
 };
 export const createOnlineOrder = async (
-  onlineCustomerId,
   address,
   phone,
   courses
@@ -78,7 +77,6 @@ export const createOnlineOrder = async (
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      onlineCustomerId,
       address,
       phone,
       courses
@@ -113,10 +111,10 @@ export const claimOrder = async (orderId, courierId) => {
   }
 };
 export const moveToPreparing = (id) =>
-  fetch(`/api/orders/${id}/preparing`, { method: "PATCH" });
+  fetch(`${BASE_URL}/${id}/preparing`, { method: "PATCH" });
 
 export const moveToReady = (id) =>
-  fetch(`/api/orders/${id}/ready`, { method: "PATCH" });
+  fetch(`${BASE_URL}/${id}/ready`, { method: "PATCH" });
 
 export const deliverOrder = (id, courierId) =>
-  fetch(`/api/orders/${id}/deliver/${courierId}`, { method: "PATCH" });
+  fetch(`${BASE_URL}/${id}/deliver/${courierId}`, { method: "PATCH" });

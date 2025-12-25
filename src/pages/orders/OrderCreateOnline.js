@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import {
   createOnlineOrder,
-  getOrderById,
+  getAllOrders,
   moveToPreparing,
   moveToReady
 } from "../../api/orderApi";
@@ -14,7 +14,6 @@ function OrderCreateOnline() {
   const [coursesList, setCoursesList] = useState([]);
 
   /* ================= CREATE FORM ================= */
-  const [onlineCustomerId, setOnlineCustomerId] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -58,13 +57,11 @@ function OrderCreateOnline() {
     }
 
     await createOnlineOrder(
-      onlineCustomerId ? Number(onlineCustomerId) : null,
       address,
       phone,
       courses
     );
 
-    setOnlineCustomerId("");
     setAddress("");
     setPhone("");
     setCourses({});
@@ -74,17 +71,16 @@ function OrderCreateOnline() {
   /* ================= LOAD ORDERS ================= */
   const loadOnlineOrders = async () => {
     setLoading(true);
-    const results = [];
-
-    for (let id = 1; id <= 300; id++) {
-      try {
-        const order = await getOrderById(id);
-        if (order && order.tableNo == null) results.push(order);
-      } catch {}
+    try {
+      const allOrders = await getAllOrders();
+      // Filter for online orders: no table no, and some address/phone identifying online
+      const onlineOnly = allOrders.filter(o => o.tableNo == null);
+      setOnlineOrders(onlineOnly);
+    } catch (err) {
+      console.error("Failed to load online orders:", err);
+    } finally {
+      setLoading(false);
     }
-
-    setOnlineOrders(results);
-    setLoading(false);
   };
 
   /* ================= HELPERS ================= */
@@ -135,12 +131,6 @@ function OrderCreateOnline() {
       {/* ===== CREATE FORM ===== */}
       <div style={{ border: "1px solid #ddd", padding: 16, marginBottom: 20 }}>
         <h4>Create Online Order</h4>
-
-        <input
-          placeholder="Customer ID (optional)"
-          value={onlineCustomerId}
-          onChange={e => setOnlineCustomerId(e.target.value)}
-        /><br /><br />
 
         <input
           placeholder="Address"
@@ -210,7 +200,7 @@ function OrderCreateOnline() {
           {onlineOrders.map(o => (
             <tr key={o.orderId}>
               <td>{o.orderId}</td>
-              <td>{o.onlineCustomerId ? `Customer #${o.onlineCustomerId}` : "Guest"}</td>
+              <td>Guest</td>
 
               <td>
                 {editingId === o.orderId

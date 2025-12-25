@@ -5,7 +5,6 @@ import { getAllCourses } from "../../api/inventoryApi";
 function UserOnlineOrderCreate() {
   const [coursesList, setCoursesList] = useState([]);
 
-  const [onlineCustomerId, setOnlineCustomerId] = useState("");
   const [address, setAddress] = useState("");
   const [phone, setPhone] = useState("");
   const [selectedCourse, setSelectedCourse] = useState("");
@@ -39,7 +38,6 @@ function UserOnlineOrderCreate() {
   };
 
   const clearForm = () => {
-    setOnlineCustomerId("");
     setAddress("");
     setPhone("");
     setSelectedCourse("");
@@ -57,7 +55,6 @@ function UserOnlineOrderCreate() {
       setSubmitting(true);
 
       await createOnlineOrder(
-        onlineCustomerId ? Number(onlineCustomerId) : null,
         address,
         phone,
         courses
@@ -79,13 +76,6 @@ function UserOnlineOrderCreate() {
 
       <div style={{ border: "1px solid #ddd", padding: 16 }}>
         <h4>Create</h4>
-
-        <input
-          placeholder="Customer ID (optional)"
-          value={onlineCustomerId}
-          onChange={(e) => setOnlineCustomerId(e.target.value)}
-        />
-        <br /><br />
 
         <input
           placeholder="Address"
