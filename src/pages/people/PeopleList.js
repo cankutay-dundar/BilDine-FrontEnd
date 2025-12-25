@@ -240,5 +240,3 @@ function PeopleList() {
 }
 
 export default PeopleList;
-
-export default PeopleList;
