@@ -40,9 +40,6 @@ function CourseList() {
                 <Link to={`/courses/edit/${course.courseName}`}>Edit</Link>{" "}
                 <Link to={`/courses/${course.courseName}/ingredients`}>
                   Ingredients
-                </Link>{" "}
-                <Link to={`/courses/${course.courseName}/availability`}>
-                  Availability
                 </Link>
               </td>
             </tr>
