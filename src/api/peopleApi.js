@@ -256,3 +256,79 @@ export const addRegularShift = (userId, dayOfWeek, start, end) =>
     method: "POST"
   }).then(res => res.json());
 
+/** LOGIN */
+
+export const registerUser = async ({
+  fullName,
+  password,
+  hireDate,
+  leftWorkDate,
+  salaryPerHour,
+  kind,         
+  subtypeData   
+}) => {
+  const params = new URLSearchParams({
+    fullName,
+    plainPassword: password,
+    hireDate,
+    salaryPerHour: Number(salaryPerHour),
+    kind
+  });
+
+  if (leftWorkDate) {
+    params.append("leftWorkDate", leftWorkDate);
+  }
+
+  const res = await fetch(
+    `${BASE_URL}/register?${params.toString()}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" },
+      body: String(subtypeData ?? "")
+    }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to register user");
+  }
+
+  return res.json();
+};
+
+export const changePassword = async (userId, oldPassword, newPassword) => {
+  const params = new URLSearchParams({
+    userId,
+    oldPassword,
+    newPassword
+  });
+
+  const res = await fetch(
+    `${BASE_URL}/change-password?${params.toString()}`,
+    { method: "POST" }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Failed to change password");
+  }
+};
+
+export const verifyUser = async (userId, password) => {
+  const params = new URLSearchParams({
+    userId,
+    plainPassword: password
+  });
+
+  const res = await fetch(
+    `${BASE_URL}/verify?${params.toString()}`,
+    { method: "POST" }
+  );
+
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(text || "Verification failed");
+  }
+
+  return res.json();
+};

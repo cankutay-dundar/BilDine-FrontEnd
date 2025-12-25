@@ -189,8 +189,8 @@ function PeopleList() {
                             </option>
                           ))}
                         </select>{" "}
-                        <input type="time" value={start} onChange={(e) => setStart(e.target.value)} />{" "}
-                        <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} />{" "}
+                        <input type="time" value={start} onChange={(e) => setStart(e.target.value)} style={{ color: '#222', background: '#fff' }} />{" "}
+                        <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} style={{ color: '#222', background: '#fff' }} />{" "}
                         <button onClick={() => handleAddShift(u.id)}>Add</button>{" "}
                         <button onClick={() => setAddingShiftFor(null)}>Cancel</button>
                       </div>
@@ -240,6 +240,7 @@ function PeopleList() {
           <label>
             Decrease Amount:{" "}
             <input
+              style={{ color: '#222', background: '#fff' }}
               type="number"
               value={decreaseAmount}
               onChange={(e) => setDecreaseAmount(e.target.value)}
