@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createOnlineOrder } from "../../api/orderApi";
 import { getAllCourses } from "../../api/inventoryApi";
+import { useNavigate } from "react-router-dom";
 
 function UserOnlineOrderCreate() {
   const [coursesList, setCoursesList] = useState([]);
@@ -13,6 +14,7 @@ function UserOnlineOrderCreate() {
   const [courses, setCourses] = useState({});
 
   const [submitting, setSubmitting] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllCourses().then(setCoursesList);
@@ -47,31 +49,25 @@ function UserOnlineOrderCreate() {
     setCourses({});
   };
 
-  const submit = async () => {
-    if (!address || !phone || Object.keys(courses).length === 0) {
-      alert("Address, phone and courses required");
-      return;
-    }
+  const submit = async (e) => {
+    e.preventDefault();
 
     try {
-      setSubmitting(true);
-
-      await createOnlineOrder(
-        onlineCustomerId ? Number(onlineCustomerId) : null,
-        address,
-        phone,
-        courses
+      const orderId = await createOnlineOrder(
+          onlineCustomerId ? Number(onlineCustomerId) : null,
+          address,
+          phone,
+          courses
       );
 
-      alert("Online order created ✅");
-      clearForm();
+      alert(`Online order created. \nOrder ID: ${orderId}`);
+      navigate(`/user/order/${orderId}`);
     } catch (err) {
       console.error(err);
-      alert("Create failed ❌");
-    } finally {
-      setSubmitting(false);
+      alert("Failed to create online order.");
     }
   };
+
 
   return (
     <div style={{ maxWidth: 900 }}>
