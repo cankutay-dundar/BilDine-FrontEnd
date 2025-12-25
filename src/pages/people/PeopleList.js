@@ -154,7 +154,13 @@ function PeopleList() {
 
       {/* PAYROLL DECREASE FORM */}
       {selectedUserForPayroll && (
-        <div style={{ border: '1px solid #ccc', padding: 20, marginBottom: 20, background: '#f9f9f9' }}>
+       <div style={{ 
+          border: '1px solid #444',
+          padding: 20,
+          marginBottom: 20,
+          background: 'transparent',
+          color: '#ffffff'
+        }}>
           <h4>Decrease Payroll for User ID: {selectedUserForPayroll}</h4>
           <p>Current Payroll: ${payrollAmount.toFixed(2)}</p>
           <label>
