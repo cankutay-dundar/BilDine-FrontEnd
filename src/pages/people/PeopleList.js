@@ -1,22 +1,29 @@
 import { useEffect, useState } from "react";
-import { getAllUsers, getUserKindByUserId, getUserSpecialValue, getPayrollAmount, decreasePayroll, addRegularShift } from "../../api/peopleApi";
+import {
+  getManagers,
+  getKitchenStaff,
+  getDeliverers,
+  getCleaners,
+  getPayrollAmount,
+  decreasePayroll,
+  addRegularShift,
+} from "../../api/peopleApi";
 import { Link } from "react-router-dom";
 
-const DAYS = [
-  "Sunday",
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday"
-];
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 function PeopleList() {
-  const [users, setUsers] = useState([]);
+  const [groupedUsers, setGroupedUsers] = useState({
+    MANAGER: [],
+    KITCHEN_STAFF: [],
+    DELIVERER: [],
+    CLEANER: [],
+    BASE_USER: [],
+  });
+
   const [selectedUserForPayroll, setSelectedUserForPayroll] = useState(null);
   const [payrollAmount, setPayrollAmount] = useState(0);
-  const [decreaseAmount, setDecreaseAmount] = useState('');
+  const [decreaseAmount, setDecreaseAmount] = useState("");
 
   const [addingShiftFor, setAddingShiftFor] = useState(null);
   const [day, setDay] = useState(0);
@@ -25,27 +32,28 @@ function PeopleList() {
   const [msg, setMsg] = useState("");
 
   useEffect(() => {
-    const fetchUsers = async () => {
+    const fetchGrouped = async () => {
       try {
-        const fetchedUsers = await getAllUsers();
-        const enhancedUsers = await Promise.all(
-          fetchedUsers.map(async (u) => {
-            try {
-              const kind = await getUserKindByUserId(u.id);
-              const specialValue = await getUserSpecialValue(u.id);
-              return { ...u, kind, specialValue };
-            } catch (error) {
-              console.error(`Error fetching details for user ${u.id}:`, error);
-              return { ...u, kind: 'BASE_USER', specialValue: '' };
-            }
-          })
-        );
-        setUsers(enhancedUsers);
+        const [managers, kitchen, deliverers, cleaners] = await Promise.all([
+          getManagers(),
+          getKitchenStaff(),
+          getDeliverers(),
+          getCleaners(),
+        ]);
+
+        setGroupedUsers({
+          MANAGER: managers || [],
+          KITCHEN_STAFF: kitchen || [],
+          DELIVERER: deliverers || [],
+          CLEANER: cleaners || [],
+          BASE_USER: [], // If you later add /base-users endpoint, fill it here.
+        });
       } catch (err) {
-        console.error("Failed to load users:", err);
+        console.error("Failed to load grouped users:", err);
       }
     };
-    fetchUsers();
+
+    fetchGrouped();
   }, []);
 
   const handleDecreasePayrollClick = async (userId) => {
@@ -53,28 +61,25 @@ function PeopleList() {
       const amount = await getPayrollAmount(userId);
       setPayrollAmount(amount);
       setSelectedUserForPayroll(userId);
-      setDecreaseAmount('');
+      setDecreaseAmount("");
     } catch (error) {
-      alert('Failed to fetch payroll amount');
+      alert("Failed to fetch payroll amount");
     }
   };
 
   const handleConfirmDecrease = async () => {
-    if (!decreaseAmount || isNaN(decreaseAmount) || decreaseAmount <= 0) {
-      alert('Please enter a valid positive amount');
+    const n = Number(decreaseAmount);
+    if (!decreaseAmount || Number.isNaN(n) || n <= 0) {
+      alert("Please enter a valid positive amount");
       return;
     }
     try {
-      await decreasePayroll(selectedUserForPayroll, parseFloat(decreaseAmount));
-      alert('Payroll decreased successfully');
+      await decreasePayroll(selectedUserForPayroll, n);
+      alert("Payroll decreased successfully");
       setSelectedUserForPayroll(null);
     } catch (error) {
-      alert('Failed to decrease payroll');
+      alert("Failed to decrease payroll");
     }
-  };
-
-  const handleCancelDecrease = () => {
-    setSelectedUserForPayroll(null);
   };
 
   const handleAddShift = async (userId) => {
@@ -88,37 +93,23 @@ function PeopleList() {
     }
   };
 
-  const groupedUsers = {
-    MANAGER: [],
-    KITCHEN_STAFF: [],
-    DELIVERER: [],
-    CLEANER: [],
-    BASE_USER: []
-  };
-
-  users.forEach(u => {
-    if (groupedUsers[u.kind]) {
-      groupedUsers[u.kind].push(u);
-    } else {
-      groupedUsers.BASE_USER.push(u);
-    }
-  });
-
   const specialColumnNames = {
-    MANAGER: 'Level',
-    KITCHEN_STAFF: 'Kitchen Role',
-    DELIVERER: 'Deliverer Type',
-    CLEANER: 'Duty'
+    MANAGER: "Level",
+    KITCHEN_STAFF: "Kitchen Role",
+    DELIVERER: "Deliverer Type",
+    CLEANER: "Duty",
   };
 
-  const renderTable = (userType, userList) => {
-    if (userList.length === 0) return null;
-    const hasSpecialColumn = userType !== 'BASE_USER';
-    const specialColumnName = specialColumnNames[userType] || '';
+  const renderTable = (userType, summaries) => {
+    if (!summaries || summaries.length === 0) return null;
+
+    const hasSpecialColumn = userType !== "BASE_USER";
+    const specialColumnName = specialColumnNames[userType] || "";
 
     return (
       <div key={userType} style={{ marginBottom: 40 }}>
-        <h3>{userType.replace('_', ' ')} Users</h3>
+        <h3>{userType.replace("_", " ")} Users</h3>
+
         <table border="1" width="100%" cellPadding="6">
           <thead style={{ background: "#f2f2f2" }}>
             <tr>
@@ -129,55 +120,55 @@ function PeopleList() {
               <th>Quick Actions</th>
             </tr>
           </thead>
-          <tbody>
-            {userList.map(u => (
-              <tr key={u.id}>
-                <td>{u.id}</td>
-                <td>{u.fullName}</td>
-                <td>{u.salaryPerHour}</td>
-                {hasSpecialColumn && <td>{u.specialValue}</td>}
-                <td>
-                  <Link to={`/schedule`}>
-                    <button>📅 Schedule</button>
-                  </Link>{" "}
-                  <Link to={`/people/promote?userId=${u.id}`}>
-                    <button>⬆️ Promote</button>
-                  </Link>{" "}
-                  <button onClick={() => handleDecreasePayrollClick(u.id)}>💰 Decrease Payroll</button>{" "}
-                  <button onClick={() => setAddingShiftFor(u.id)}>➕ Add Shift</button>
 
-                  {/* INLINE ADD SHIFT FORM */}
-                  {addingShiftFor === u.id && (
-                    <div style={{ marginTop: 10, border: '1px solid #ddd', padding: 10, borderRadius: 4 }}>
-                      <select
-                        value={day}
-                        onChange={e => setDay(Number(e.target.value))}
+          <tbody>
+            {summaries.map((s) => {
+              const u = s.user; // IMPORTANT: record field `user`
+              return (
+                <tr key={u.id}>
+                  <td>{u.id}</td>
+                  <td>{u.fullName}</td>
+                  <td>{u.salaryPerHour}</td>
+                  {hasSpecialColumn && <td>{s.specialValue}</td>}
+
+                  <td>
+                    <Link to={`/schedule`}>
+                      <button>📅 Schedule</button>
+                    </Link>{" "}
+                    <Link to={`/people/promote?userId=${u.id}`}>
+                      <button>⬆️ Promote</button>
+                    </Link>{" "}
+                    <button onClick={() => handleDecreasePayrollClick(u.id)}>
+                      💰 Decrease Payroll
+                    </button>{" "}
+                    <button onClick={() => setAddingShiftFor(u.id)}>➕ Add Shift</button>
+
+                    {addingShiftFor === u.id && (
+                      <div
+                        style={{
+                          marginTop: 10,
+                          border: "1px solid #ddd",
+                          padding: 10,
+                          borderRadius: 4,
+                        }}
                       >
-                        {DAYS.map((d, i) => (
-                          <option key={i} value={i}>{d}</option>
-                        ))}
-                      </select>{" "}
-                      <input
-                        type="time"
-                        value={start}
-                        onChange={e => setStart(e.target.value)}
-                      />{" "}
-                      <input
-                        type="time"
-                        value={end}
-                        onChange={e => setEnd(e.target.value)}
-                      />{" "}
-                      <button onClick={() => handleAddShift(u.id)}>
-                        Add
-                      </button>{" "}
-                      <button onClick={() => setAddingShiftFor(null)}>
-                        Cancel
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            ))}
+                        <select value={day} onChange={(e) => setDay(Number(e.target.value))}>
+                          {DAYS.map((d, i) => (
+                            <option key={i} value={i}>
+                              {d}
+                            </option>
+                          ))}
+                        </select>{" "}
+                        <input type="time" value={start} onChange={(e) => setStart(e.target.value)} />{" "}
+                        <input type="time" value={end} onChange={(e) => setEnd(e.target.value)} />{" "}
+                        <button onClick={() => handleAddShift(u.id)}>Add</button>{" "}
+                        <button onClick={() => setAddingShiftFor(null)}>Cancel</button>
+                      </div>
+                    )}
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
@@ -188,7 +179,6 @@ function PeopleList() {
     <div>
       <h2>👥 People Management</h2>
 
-      {/* ACTION BAR */}
       <div style={{ marginBottom: 20 }}>
         <Link to="/people/add">
           <button>➕ Add User</button>
@@ -204,19 +194,21 @@ function PeopleList() {
         </Link>
       </div>
 
-      {/* PAYROLL DECREASE FORM */}
       {selectedUserForPayroll && (
-        <div style={{
-          border: '1px solid #444',
-          padding: 20,
-          marginBottom: 20,
-          background: 'transparent',
-          color: '#ffffff'
-        }}>
+        <div
+          style={{
+            border: "1px solid #444",
+            padding: 20,
+            marginBottom: 20,
+            background: "transparent",
+            color: "#ffffff",
+          }}
+        >
           <h4>Decrease Payroll for User ID: {selectedUserForPayroll}</h4>
           <p>Current Payroll: ${payrollAmount.toFixed(2)}</p>
+
           <label>
-            Decrease Amount:
+            Decrease Amount:{" "}
             <input
               type="number"
               value={decreaseAmount}
@@ -225,16 +217,16 @@ function PeopleList() {
               step="0.01"
             />
           </label>
+
           <br />
           <button onClick={handleConfirmDecrease}>Confirm Decrease</button>{" "}
-          <button onClick={handleCancelDecrease}>Cancel</button>
+          <button onClick={() => setSelectedUserForPayroll(null)}>Cancel</button>
         </div>
       )}
 
       {msg && <p style={{ color: "green" }}>{msg}</p>}
 
-      {/* USERS TABLES */}
-      {Object.keys(groupedUsers).map(userType => renderTable(userType, groupedUsers[userType]))}
+      {Object.keys(groupedUsers).map((t) => renderTable(t, groupedUsers[t]))}
     </div>
   );
 }

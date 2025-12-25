@@ -44,6 +44,30 @@ export const getPayrollAmount = async (userId) => {
   return res.json();
 };
 
+export const getManagers = async () => {
+  const res = await fetch(`${BASE_URL}/managers`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
+export const getKitchenStaff = async () => {
+  const res = await fetch(`${BASE_URL}/kitchen-staff`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
+export const getDeliverers = async () => {
+  const res = await fetch(`${BASE_URL}/deliverers`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
+export const getCleaners = async () => {
+  const res = await fetch(`${BASE_URL}/cleaners`);
+  if (!res.ok) return [];
+  return res.json();
+};
+
 export const decreasePayroll = (userId, amount) =>
   fetch(`${BASE_URL}/decrease-payroll?userId=${userId}&amount=${amount}`, {
     method: "POST"
