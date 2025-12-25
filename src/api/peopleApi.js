@@ -25,6 +25,30 @@ export const getAllWaiters = async () => {
   if (!res.ok) return [];
   return res.json();
 };
+
+export const getUserSpecialValue = async (userId) => {
+  const res = await fetch(`${BASE_URL}/users/${userId}/special-value`);
+  if (!res.ok) throw new Error("Failed to get user special value");
+  return res.text();
+};
+
+export const getUserKindByUserId = async (userId) => {
+  const res = await fetch(`${BASE_URL}/users/${userId}/kind`);
+  if (!res.ok) throw new Error("Failed to get user kind");
+  return res.json();
+};
+
+export const getPayrollAmount = async (userId) => {
+  const res = await fetch(`${BASE_URL}/users/${userId}/payroll-amount`);
+  if (!res.ok) throw new Error("Failed to get payroll amount");
+  return res.json();
+};
+
+export const decreasePayroll = (userId, amount) =>
+  fetch(`${BASE_URL}/users/${userId}/decrease-payroll?userId=${userId}&amount=${amount}`, {
+    method: "POST"
+  });
+
 export const updateSalary = (fullName, salaryPerHour) =>
   fetch(`${BASE_URL}/users/salary`, {
     method: "PATCH",
