@@ -264,29 +264,24 @@ export const registerUser = async ({
   hireDate,
   leftWorkDate,
   salaryPerHour,
-  kind,         
-  subtypeData   
+  kind,
+  subtypeData
 }) => {
-  const params = new URLSearchParams({
+  const body = {
     fullName,
     plainPassword: password,
     hireDate,
+    leftWorkDate,
     salaryPerHour: Number(salaryPerHour),
-    kind
+    kind,
+    subtypeData: String(subtypeData ?? "")
+  };
+
+  const res = await fetch(`${BASE_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body)
   });
-
-  if (leftWorkDate) {
-    params.append("leftWorkDate", leftWorkDate);
-  }
-
-  const res = await fetch(
-    `${BASE_URL}/register?${params.toString()}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "text/plain" },
-      body: String(subtypeData ?? "")
-    }
-  );
 
   if (!res.ok) {
     const text = await res.text();

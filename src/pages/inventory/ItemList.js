@@ -69,8 +69,8 @@ function ItemList() {
                     </span>
                   )}
                 </td>
-                <td>-</td>
-                <td>-</td>
+                <td>{item.containsMeat ? "Yes" : "No"}</td>
+                <td>{item.containsGluten ? "Yes" : "No"}</td>
                 <td>
                   <span style={isExpired ? { color: "#f87171", fontWeight: "bold" } : {}}>
                     {item.expiryDate || "N/A"}

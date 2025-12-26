@@ -47,7 +47,7 @@ function PeopleList() {
           KITCHEN_STAFF: kitchen || [],
           DELIVERER: deliverers || [],
           CLEANER: cleaners || [],
-          BASE_USER: [], 
+          BASE_USER: [],
         });
       } catch (err) {
         console.error("Failed to load grouped users:", err);
@@ -165,9 +165,7 @@ function PeopleList() {
                     <Link to={`/schedule`}>
                       <button>📅 Schedule</button>
                     </Link>{" "}
-                    <Link to={`/people/promote?userId=${u.id}`}>
-                      <button>⬆️ Promote</button>
-                    </Link>{" "}
+              
                     <button onClick={() => handleDecreasePayrollClick(u.id)}>
                       💰 Decrease Payroll
                     </button>{" "}
@@ -213,9 +211,7 @@ function PeopleList() {
         <Link to="/people/add">
           <button>➕ Add User</button>
         </Link>{" "}
-        <Link to="/people/promote">
-          <button>⬆️ Promote User</button>
-        </Link>{" "}
+
         <Link to="/people/availability/requests">
           <button>🕒 Availability Requests</button>
         </Link>{" "}

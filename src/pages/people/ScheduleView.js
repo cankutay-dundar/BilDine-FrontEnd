@@ -2,8 +2,8 @@ import { useState } from "react";
 import { getRegularShiftByUserId } from "../../api/peopleApi";
 
 const DAYS = [
-  "Sunday","Monday","Tuesday",
-  "Wednesday","Thursday","Friday","Saturday"
+  "Sunday", "Monday", "Tuesday",
+  "Wednesday", "Thursday", "Friday", "Saturday"
 ];
 
 function ScheduleView() {

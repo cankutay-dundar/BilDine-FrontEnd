@@ -1,4 +1,4 @@
-const BASE_URL = "/api/inventory";
+const BASE_URL = "http://localhost:8080/api/inventory";
 
 /* ================= ITEMS ================= */
 /* ================= ITEMS ================= */
@@ -90,7 +90,6 @@ export const getAllCourses = () =>
 
 export const createCourse = async (course) => {
 
-  // 🔑 BACKEND’E GARANTİ PAYLOAD
   const payload = {
     courseName: course.courseName,
     price: course.price,
@@ -167,12 +166,14 @@ export const recordUsage = (data) =>
     body: JSON.stringify(data)
   });
 
-export async function getAllUsage(type) {
-  let url = "/api/inventory/usage";
+export async function getAllUsage({ type, start, end } = {}) {
+  const params = new URLSearchParams();
+  if (type) params.append("type", type);
+  if (start) params.append("start", start);
+  if (end) params.append("end", end);
 
-  if (type && type !== "") {
-    url += `?type=${type}`;
-  }
+  const queryString = params.toString();
+  const url = `${BASE_URL}/usage${queryString ? "?" + queryString : ""}`;
 
   console.log("📡 GET USAGE URL:", url);
 

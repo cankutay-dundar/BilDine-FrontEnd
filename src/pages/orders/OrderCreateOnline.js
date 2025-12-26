@@ -186,8 +186,6 @@ function OrderCreateOnline() {
             <th>ID</th>
             <th>Customer</th>
             <th>Address</th>
-            <th>Phone</th>
-            <th>Courses</th>
             <th>Status</th>
             <th>Total</th>
             <th>Date</th>
@@ -208,13 +206,6 @@ function OrderCreateOnline() {
                   : o.address}
               </td>
 
-              <td>
-                {editingId === o.orderId
-                  ? <input value={editPhone} onChange={e => setEditPhone(e.target.value)} />
-                  : o.phone}
-              </td>
-
-              <td>{renderCourses(o)}</td>
 
               <td>
                 {editingId === o.orderId ? (

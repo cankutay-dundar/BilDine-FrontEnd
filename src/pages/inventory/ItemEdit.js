@@ -28,6 +28,14 @@ function ItemEdit() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Check if expiry date is in the past
+    if (form.expiryDate) {
+      const today = new Date().toISOString().split('T')[0];
+      if (form.expiryDate < today) {
+        alert("⚠️ Warning: The expiry date is in the past!");
+      }
+    }
+
     const payload = {
       price: form.price,
       amount: form.amount,
@@ -45,6 +53,7 @@ function ItemEdit() {
       <h2>Edit Item: {form.name}</h2>
 
       <form onSubmit={handleSubmit}>
+      <h3>Price</h3>
         <input
           name="price"
           type="number"
@@ -53,6 +62,7 @@ function ItemEdit() {
           onChange={handleChange}
         />
         <br />
+        <h3>Amount</h3>
 
         <input
           name="amount"

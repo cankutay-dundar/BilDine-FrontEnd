@@ -38,7 +38,6 @@ import TimeOffRequestList from "../pages/people/TimeOffRequestList";
 
 /* USER */
 import UserOnlineOrderCreate from "../pages/user/UserOnlineOrderCreate";
-import UserOnlineOrderStatus from "../pages/user/UserOnlineOrderStatus";
 
 /* DASHBOARD */
 import Login from "../auth/Login";
@@ -47,7 +46,6 @@ import StaffDashboard from "../pages/staff/StaffDashboard";
 import StaffSchedulePage from "../pages/staff/StaffSchedulePage";
 import StaffAvailabilityPage from "../pages/staff/StaffAvailabilityPage";
 import StaffTimeOffPage from "../pages/staff/StaffTimeOffPage";
-import StaffWorkHoursPage from "../pages/staff/StaffWorkHoursPage";
 
 /* REPORT */
 import Report from "../pages/report/Report";
@@ -91,11 +89,9 @@ function AppRoutes() {
         <Route path="/staff/schedule" element={<StaffSchedulePage />} />
         <Route path="/staff/availability" element={<StaffAvailabilityPage />} />
         <Route path="/staff/timeoff" element={<StaffTimeOffPage />} />
-        <Route path="/staff/work-hours" element={<StaffWorkHoursPage />} />
 
         {/* USER */}
         <Route path="/user/online" element={<UserOnlineOrderCreate />} />
-        <Route path="/user/order/:id" element={<UserOnlineOrderStatus />} />
 
         {/* PEOPLE */}
         <Route path="/people" element={<PeopleList />} />

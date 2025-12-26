@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { getAllUsage } from "../../api/inventoryApi";
 import { Link } from "react-router-dom";
 
@@ -34,6 +34,11 @@ function UsageList() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>

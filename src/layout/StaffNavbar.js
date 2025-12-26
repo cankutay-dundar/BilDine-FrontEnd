@@ -28,7 +28,6 @@ function StaffNavbar() {
       <Link to="/staff/schedule">Schedule</Link>
       <Link to="/staff/availability">Availability</Link>
       <Link to="/staff/timeoff">Time-Off</Link>
-      <Link to="/staff/work-hours">Work Hours</Link>
 
       <span style={{ marginLeft: "auto" }}>
         <button onClick={handleLogout}>Logout</button>
