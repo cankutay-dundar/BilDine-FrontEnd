@@ -19,9 +19,8 @@ export default function UserOnlineOrderStatus() {
 
     useEffect(() => {
         load();
-        const t = setInterval(load, 4000); // poll every 4s
+        const t = setInterval(load, 4000);
         return () => clearInterval(t);
-        // eslint-disable-next-line
     }, [id]);
 
     if (err) return <div style={{ padding: 16 }}>{err}</div>;

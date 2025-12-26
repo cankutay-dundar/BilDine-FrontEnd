@@ -5,7 +5,7 @@ function AllOrders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  const MAX_ID = 500; // 🔥 DB’de max kaç olabilir diye makul limit
+  const MAX_ID = 500;
 
   const loadAllOrders = async () => {
     setLoading(true);
@@ -18,7 +18,7 @@ function AllOrders() {
           results.push(order);
         }
       } catch {
-        // ❗ 404 → sadece geç, durma
+
       }
     }
 

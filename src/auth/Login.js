@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/AuthContext";
 
 function Login() {
-  // ✅ TÜM HOOK’LAR EN ÜSTTE
   const { login, user } = useAuth();
   const navigate = useNavigate();
 
@@ -11,7 +10,6 @@ function Login() {
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState("STAFF");
 
-  // 🔁 Login olmuşsa yönlendir
   useEffect(() => {
     if (user) {
       navigate(user.role === "MANAGER" ? "/dashboard" : "/staff", {

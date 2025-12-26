@@ -11,7 +11,7 @@ function CourseList() {
       console.log("📥 COURSES FETCHED:", data);
       setCourses(data);
     });
-  }, [location.pathname]); // 🔑 create sonrası otomatik refresh
+  }, [location.pathname]); 
 
   return (
     <div>

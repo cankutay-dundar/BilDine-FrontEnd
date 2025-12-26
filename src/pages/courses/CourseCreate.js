@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 function CourseCreate() {
   const navigate = useNavigate();
 
-  // 🔑 BACKEND İLE BİREBİR UYUMLU
   const [form, setForm] = useState({
     courseName: "",
     price: 0,

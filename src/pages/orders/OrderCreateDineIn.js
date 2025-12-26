@@ -106,7 +106,7 @@ function OrderCreateDineIn() {
   };
 
   /* ================= FRONTEND MAGIC ================= */
-  // Create an O(1) map for quick waiter name lookups
+
   const waiterMap = new Map(users.map(u => [u.id, u.fullName]));
 
   const waiters = users;

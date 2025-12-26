@@ -25,7 +25,7 @@ function ItemList() {
   const handleDelete = (name) => {
     if (window.confirm("Are you sure?")) {
       deleteItem(name).then(() => {
-        loadData(); // ✅ refresh without page reload
+        loadData();
       });
     }
   };

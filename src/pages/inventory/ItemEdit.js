@@ -9,7 +9,7 @@ function ItemEdit() {
 
   useEffect(() => {
     getAllItems().then(items => {
-      const found = items.find(i => i.name === name); // ✅ DOĞRU
+      const found = items.find(i => i.name === name);
       setForm(found);
     });
   }, [name]);

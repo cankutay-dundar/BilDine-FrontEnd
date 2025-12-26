@@ -15,7 +15,7 @@ const handle = async (res) => {
 export const getRegularShifts = async (userId) => {
   if (!userId) throw new Error("User not logged in");
   const res = await fetch(`${BASE}/${userId}/regular-shift`);
-  return handle(res); // List<RegularShiftSlot>
+  return handle(res);
 };
 
 /* ================= AVAILABILITY ================= */
@@ -24,7 +24,7 @@ export const addAvailability = async (userId, { date, start, end }) => {
   const res = await fetch(`${BASE}/${userId}/availability?date=${date}&start=${start}&end=${end}`, {
     method: "POST",
   });
-  return handle(res); // {message}
+  return handle(res);
 };
 
 export const deleteAvailability = async (userId, { date, start, end }) => {
@@ -32,7 +32,7 @@ export const deleteAvailability = async (userId, { date, start, end }) => {
   const res = await fetch(`${BASE}/${userId}/availability?date=${date}&start=${start}&end=${end}`, {
     method: "DELETE",
   });
-  return handle(res); // {message}
+  return handle(res);
 };
 
 /* ================= TIME OFF ================= */
@@ -41,17 +41,15 @@ export const addTimeOff = async (userId, { date, start, end }) => {
   const res = await fetch(`${BASE}/${userId}/timeoff?date=${date}&start=${start}&end=${end}`, {
     method: "POST",
   });
-  return handle(res); // {message}
+  return handle(res);
 };
 
-// backend deleteTimeOff: date + start only
 export const deleteTimeOff = async (userId, { date, start }) => {
   if (!userId) throw new Error("User not logged in");
   const res = await fetch(`${BASE}/${userId}/timeoff?date=${date}&start=${start}`, {
     method: "DELETE",
   });
 
-  // 204 No Content -> handle() json beklemesin
   if (res.status === 204) return { message: "Time-off request deleted" };
   return handle(res);
 };
@@ -62,7 +60,7 @@ export const checkIn = async (userId) => {
   const res = await fetch(`${BASE}/${userId}/work-hours/check-in`, {
     method: "POST",
   });
-  return handle(res); // {message}
+  return handle(res);
 };
 
 export const checkOut = async (userId) => {
@@ -70,5 +68,5 @@ export const checkOut = async (userId) => {
   const res = await fetch(`${BASE}/${userId}/work-hours/check-out`, {
     method: "POST",
   });
-  return handle(res); // {message}
+  return handle(res);
 };
