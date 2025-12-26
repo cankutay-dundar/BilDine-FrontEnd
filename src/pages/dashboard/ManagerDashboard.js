@@ -87,6 +87,7 @@ function Dashboard() {
         <Link to="/people"><button>👥 People</button></Link>
         <Link to="/usage/list"><button>📊 Usage</button></Link>
         <Link to="/usage/list"><button>🗑️ Waste Report</button></Link>
+        <Link to="/report"><button>📄 Report</button></Link>
       </div>
     </div>
   );

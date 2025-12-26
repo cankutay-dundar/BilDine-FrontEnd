@@ -9,7 +9,6 @@ function TimeOffRequestList() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load pending time-off requests
   const load = async () => {
     setLoading(true);
     try {
@@ -28,7 +27,6 @@ function TimeOffRequestList() {
     load();
   }, []);
 
-  // ✅ Approve handler
   const approve = async (r) => {
     try {
       await approveTimeOff(r.userId, r.date);
@@ -40,7 +38,6 @@ function TimeOffRequestList() {
     }
   };
 
-  // ✅ Reject handler (THIS is where it goes)
   const reject = async (r) => {
     if (!window.confirm("Reject this time-off request?")) return;
 

@@ -15,7 +15,6 @@ export default function StaffTimeOffPage() {
   const [msg, setMsg] = useState("");
   const [err, setErr] = useState("");
 
-  // Format HH:mm -> HH:mm:ss for backend
   const formatTime = (timeStr) => {
     if (!timeStr) return null;
     if (timeStr.length === 5) return timeStr + ":00";

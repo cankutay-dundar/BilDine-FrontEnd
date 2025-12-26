@@ -7,7 +7,6 @@ function MainLayout() {
   const { user } = useAuth() || {};
   const location = useLocation();
 
-  // ✅ /user ile başlayan sayfalarda navbar göstermeyelim
   const hideNavbar = location.pathname.startsWith("/user");
 
   return (

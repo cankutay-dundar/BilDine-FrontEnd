@@ -5,14 +5,18 @@ import { Link } from "react-router-dom";
 function UsageList() {
   const [records, setRecords] = useState([]);
   const [type, setType] = useState("");
+  const [startDate, setStartDate] = useState("");
+  const [endDate, setEndDate] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const load = async () => {
-    console.log("🔄 LOAD CLICKED | type =", type);
+    console.log("🔄 LOAD CLICKED | type =", type, "start =", startDate, "end =", endDate);
     setLoading(true);
+    setError("");
 
     try {
-      const data = await getAllUsage(type);
+      const data = await getAllUsage({ type, start: startDate, end: endDate });
 
       console.log("📥 DATA FROM API:", data);
 
@@ -25,6 +29,7 @@ function UsageList() {
     } catch (err) {
       console.error("❌ LOAD ERROR:", err);
       setRecords([]);
+      setError("Failed to load usage records.");
     } finally {
       setLoading(false);
     }
@@ -39,12 +44,10 @@ function UsageList() {
           <button style={{ marginRight: 10 }}>➕ Add Usage</button>
         </Link>
 
+        {/* Type Filter */}
         <select
           value={type}
-          onChange={e => {
-            console.log("🔁 TYPE CHANGED:", e.target.value);
-            setType(e.target.value);
-          }}
+          onChange={e => setType(e.target.value)}
           style={{ marginRight: 10 }}
         >
           <option value="">ALL</option>
@@ -53,10 +56,32 @@ function UsageList() {
           <option value="RECEIVE">RECEIVE</option>
         </select>
 
+        {/* Date Filters */}
+        <label style={{ marginRight: 10 }}>
+          Start:
+          <input
+            type="date"
+            value={startDate}
+            onChange={e => setStartDate(e.target.value)}
+            style={{ marginLeft: 5 }}
+          />
+        </label>
+        <label style={{ marginRight: 10 }}>
+          End:
+          <input
+            type="date"
+            value={endDate}
+            onChange={e => setEndDate(e.target.value)}
+            style={{ marginLeft: 5 }}
+          />
+        </label>
+
         <button onClick={load} disabled={loading}>
           {loading ? "Loading..." : "Load"}
         </button>
       </div>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <table border="1" width="100%">
         <thead>

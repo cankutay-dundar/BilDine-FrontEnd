@@ -9,7 +9,6 @@ function AvailabilityRequestsList() {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // Load availability requests
   const load = async () => {
     setLoading(true);
     try {
@@ -28,7 +27,6 @@ function AvailabilityRequestsList() {
     load();
   }, []);
 
-  // Approve handler
   const approve = async (r) => {
     try {
       await approveAvailability(
@@ -45,7 +43,6 @@ function AvailabilityRequestsList() {
     }
   };
 
-  // Reject handler
   const reject = async (r) => {
     if (!window.confirm("Reject this availability request?")) return;
 

@@ -7,9 +7,6 @@ import ItemList from "../pages/inventory/ItemList";
 import ItemCreate from "../pages/inventory/ItemCreate";
 import ItemEdit from "../pages/inventory/ItemEdit";
 import LowStockItems from "../pages/inventory/LowStockItems";
-import AvailabilityRequestsList from "../pages/people/AvailabilityRequestList";
-
-import UserOnlineOrderCreate from "../pages/user/UserOnlineOrderCreate";
 
 /* ORDERS */
 import OrderCreateDineIn from "../pages/orders/OrderCreateDineIn";
@@ -36,28 +33,35 @@ import AddUser from "../pages/people/AddUser";
 import PromoteUser from "../pages/people/PromoteUser";
 import ScheduleView from "../pages/people/ScheduleView";
 import AvailabilityRequest from "../pages/people/AvailabilityRequest";
+import AvailabilityRequestsList from "../pages/people/AvailabilityRequestList";
 import TimeOffRequestList from "../pages/people/TimeOffRequestList";
 
-/* AUTH & DASHBOARD */
+/* USER */
+import UserOnlineOrderCreate from "../pages/user/UserOnlineOrderCreate";
+import UserOnlineOrderStatus from "../pages/user/UserOnlineOrderStatus";
+
+/* DASHBOARD */
 import Login from "../auth/Login";
 import ManagerDashboard from "../pages/dashboard/ManagerDashboard";
-
-
 import StaffDashboard from "../pages/staff/StaffDashboard";
 import StaffSchedulePage from "../pages/staff/StaffSchedulePage";
 import StaffAvailabilityPage from "../pages/staff/StaffAvailabilityPage";
 import StaffTimeOffPage from "../pages/staff/StaffTimeOffPage";
 import StaffWorkHoursPage from "../pages/staff/StaffWorkHoursPage";
 
+/* REPORT */
+import Report from "../pages/report/Report";
+
 function AppRoutes() {
   return (
     <Routes>
       <Route element={<MainLayout />}>
-        {/* AUTH */}
+        {/* AUTH & DASHBOARD */}
         <Route path="/login" element={<Login />} />
         <Route path="/dashboard" element={<ManagerDashboard />} />
+        <Route path="/report" element={<Report />} /> {/* <-- REPORT ROUTE */}
 
-        {/* ITEMS */}
+        {/* INVENTORY */}
         <Route path="/items" element={<ItemList />} />
         <Route path="/items/create" element={<ItemCreate />} />
         <Route path="/items/edit/:name" element={<ItemEdit />} />
@@ -75,20 +79,23 @@ function AppRoutes() {
         <Route path="/usage/create" element={<UsageCreate />} />
         <Route path="/usage/item" element={<ItemUsageHistory />} />
 
-{/* ORDERS */}
-<Route path="/orders/dine-in" element={<OrderCreateDineIn />} />
-<Route path="/orders/online" element={<OrderCreateOnline />} />
-<Route path="/orders/detail" element={<OrderDetail />} />
-<Route path="/orders/ready-online" element={<ReadyOnlineOrders />} />
-<Route path="/orders/all" element={<AllOrders />} />
+        {/* ORDERS */}
+        <Route path="/orders/dine-in" element={<OrderCreateDineIn />} />
+        <Route path="/orders/online" element={<OrderCreateOnline />} />
+        <Route path="/orders/detail" element={<OrderDetail />} />
+        <Route path="/orders/ready-online" element={<ReadyOnlineOrders />} />
+        <Route path="/orders/all" element={<AllOrders />} />
 
-{/* STAFF ROUTES (public) */}
-          <Route path="/staff" element={<StaffDashboard />} />
-          <Route path="/staff/schedule" element={<StaffSchedulePage />} />
-          <Route path="/staff/availability" element={<StaffAvailabilityPage />} />
-          <Route path="/staff/timeoff" element={<StaffTimeOffPage />} />
-          <Route path="/staff/work-hours" element={<StaffWorkHoursPage />} />
-          <Route path="/user/online" element={<UserOnlineOrderCreate />} />
+        {/* STAFF */}
+        <Route path="/staff" element={<StaffDashboard />} />
+        <Route path="/staff/schedule" element={<StaffSchedulePage />} />
+        <Route path="/staff/availability" element={<StaffAvailabilityPage />} />
+        <Route path="/staff/timeoff" element={<StaffTimeOffPage />} />
+        <Route path="/staff/work-hours" element={<StaffWorkHoursPage />} />
+
+        {/* USER */}
+        <Route path="/user/online" element={<UserOnlineOrderCreate />} />
+        <Route path="/user/order/:id" element={<UserOnlineOrderStatus />} />
 
         {/* PEOPLE */}
         <Route path="/people" element={<PeopleList />} />
@@ -96,7 +103,7 @@ function AppRoutes() {
         <Route path="/people/promote" element={<PromoteUser />} />
         <Route path="/schedule" element={<ScheduleView />} />
         <Route path="/people/availability" element={<AvailabilityRequest />} />
-        <Route path="/people/availability/requests" element={<AvailabilityRequestsList />}/>
+        <Route path="/people/availability/requests" element={<AvailabilityRequestsList />} />
         <Route path="/people/timeoff/requests" element={<TimeOffRequestList />} />
       </Route>
     </Routes>

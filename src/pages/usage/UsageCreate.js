@@ -8,7 +8,6 @@ function UsageCreate() {
   const [date, setDate] = useState("");
   const [message, setMessage] = useState("");
 
-  // 🔹 ITEMS LOAD
   useEffect(() => {
     fetch("/api/inventory/items")
       .then(res => res.json())
@@ -17,7 +16,7 @@ function UsageCreate() {
 
         if (Array.isArray(data) && data.length > 0) {
           setItems(data);
-          setItemName(data[0].name); // ✅ default select
+          setItemName(data[0].name);
         } else {
           setItems([]);
           setItemName("");
@@ -29,7 +28,6 @@ function UsageCreate() {
       });
   }, []);
 
-  // 🔹 SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
     setMessage("");
@@ -40,7 +38,7 @@ function UsageCreate() {
     }
 
     const payload = {
-      itemName: itemName,   // ✅ BACKEND BEKLİYOR
+      itemName: itemName,
       usageType,
       amount: Number(amount)
     };

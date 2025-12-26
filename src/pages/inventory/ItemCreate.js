@@ -26,7 +26,6 @@ function ItemCreate() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // 🧪 DEBUG
     console.log("🟡 RAW FORM:", form);
 
     const payload = {

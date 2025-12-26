@@ -25,10 +25,8 @@ function CourseIngredients() {
       amountRequired: Number(amountRequired)
     };
 
-    // ✅ backend insert
     await addIngredient(courseName, payload);
 
-    // ✅ OPTIMISTIC UI UPDATE
     setIngredients(prev => [
       ...prev,
       {

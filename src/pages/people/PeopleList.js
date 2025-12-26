@@ -47,7 +47,7 @@ function PeopleList() {
           KITCHEN_STAFF: kitchen || [],
           DELIVERER: deliverers || [],
           CLEANER: cleaners || [],
-          BASE_USER: [], // If you later add /base-users endpoint, fill it here.
+          BASE_USER: [], 
         });
       } catch (err) {
         console.error("Failed to load grouped users:", err);
@@ -136,7 +136,7 @@ function PeopleList() {
 
           <tbody>
             {summaries.map((s) => {
-              const u = s.user; // IMPORTANT: record field `user`
+              const u = s.user;
               return (
                 <tr key={u.id}>
                   <td>{u.id}</td>
